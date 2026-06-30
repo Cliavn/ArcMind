@@ -1,0 +1,73 @@
+{
+  "name": "arcmind",
+  "productName": "ArcMind",
+  "version": "0.1.0",
+  "description": "Immersive desktop AI conversation terminal with a 3D particle core.",
+  "main": "out/main/index.js",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "smoke": "npm run build && electron scripts/smoke-electron.cjs",
+    "agent:check": "powershell -ExecutionPolicy Bypass -File scripts/check-agent-system.ps1",
+    "package:win": "npm run build && electron-builder --win nsis"
+  },
+  "dependencies": {
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/utils": "^4.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sql.js": "^1.14.1",
+    "three": "^0.171.0",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/sql.js": "^1.4.11",
+    "@types/three": "^0.171.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^2.3.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  },
+  "build": {
+    "appId": "com.arcmind.desktop",
+    "productName": "ArcMind",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ArcMind"
+    }
+  }
+}

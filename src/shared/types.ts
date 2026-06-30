@@ -1,0 +1,178 @@
+export type ChatRole = 'system' | 'user' | 'assistant'
+
+export type CoreMode = 'idle' | 'listening' | 'transcribing' | 'thinking' | 'speaking' | 'muted' | 'error'
+
+export type ConversationStatus = 'idle' | 'streaming' | 'cancelled' | 'error'
+
+export type ModelProvider = 'openai-compatible'
+
+export type AppErrorCode =
+  | 'unknown'
+  | 'validation_failed'
+  | 'network_failed'
+  | 'auth_failed'
+  | 'rate_limited'
+  | 'timeout'
+  | 'cancelled'
+  | 'microphone_unavailable'
+  | 'storage_failed'
+
+export interface AppError {
+  code: AppErrorCode
+  message: string
+  recoverable: boolean
+  details?: Record<string, string | number | boolean | null>
+}
+
+export interface ChatMessage {
+  id: string
+  role: ChatRole
+  content: string
+  createdAt: string
+  error?: AppError
+}
+
+export interface ConversationState {
+  id: string
+  title: string
+  messages: ChatMessage[]
+  status: ConversationStatus
+  activeRequestId: string | null
+  updatedAt: string
+}
+
+export interface ConversationSummary {
+  id: string
+  title: string
+  messageCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface RuntimeInfo {
+  version: string
+  electron: string
+  chrome: string
+  platform: string
+  arch: string
+  packaged: boolean
+}
+
+export interface AudioSignal {
+  level: number
+  low: number
+  mid: number
+  high: number
+  rhythm: number
+}
+
+export interface VisualSignal {
+  audio: AudioSignal
+  tokenPulse: number
+  errorPulse: number
+  thinkingLevel: number
+  speakingLevel: number
+}
+
+export interface LongTermMemory {
+  id: string
+  content: string
+  enabled: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateMemoryInput {
+  content: string
+}
+
+export interface UpdateMemoryInput {
+  id: string
+  content: string
+}
+
+export interface SetMemoryEnabledInput {
+  id: string
+  enabled: boolean
+}
+
+export interface CreateConversationInput {
+  title?: string
+}
+
+export interface RenameConversationInput {
+  id: string
+  title: string
+}
+
+export interface ModelConfig {
+  provider: ModelProvider
+  baseUrl: string
+  model: string
+  apiKey: string
+  temperature: number
+  maxContextMessages: number
+  timeoutMs: number
+}
+
+export type PublicModelConfig = Omit<ModelConfig, 'apiKey'> & {
+  hasApiKey: boolean
+}
+
+export interface SendChatMessageInput {
+  requestId: string
+  conversationId: string
+  messages: ChatMessage[]
+}
+
+export interface SendChatMessageResult {
+  requestId: string
+}
+
+export interface ModelConfigTestResult {
+  ok: boolean
+  error?: AppError
+}
+
+export interface TranscribeAudioInput {
+  audio: ArrayBuffer
+  mimeType: string
+  fileName?: string
+}
+
+export interface TranscribeAudioResult {
+  text: string
+}
+
+export interface SpeakTextInput {
+  text: string
+  voice?: string
+}
+
+export type AiStreamEvent =
+  | {
+      type: 'metadata'
+      requestId: string
+      model?: string
+      conversationId?: string
+    }
+  | {
+      type: 'token'
+      requestId: string
+      delta: string
+    }
+  | {
+      type: 'done'
+      requestId: string
+      message: ChatMessage
+    }
+  | {
+      type: 'cancelled'
+      requestId: string
+      reason?: string
+    }
+  | {
+      type: 'error'
+      requestId: string
+      error: AppError
+    }
